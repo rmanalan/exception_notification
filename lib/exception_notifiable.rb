@@ -63,16 +63,24 @@ module ExceptionNotifiable
       !self.class.local_addresses.detect { |addr| addr.include?(remote) }.nil?
     end
 
+    def public_path
+      if defined?($servlet_context)
+        $servlet_context.getReal_path('/')
+      else
+        RAILS_ROOT + '/public/'
+      end
+    end
+
     def render_404
       respond_to do |type|
-        type.html { render :file => "#{RAILS_ROOT}/public/404.html", :status => "404 Not Found" }
+        type.html { render :file => "#{public_path}/404.html", :status => "404 Not Found" }
         type.all  { render :nothing => true, :status => "404 Not Found" }
       end
     end
 
     def render_500
       respond_to do |type|
-        type.html { render :file => "#{RAILS_ROOT}/public/500.html", :status => "500 Error" }
+        type.html { render :file => "#{public_path}/500.html", :status => "500 Error" }
         type.all  { render :nothing => true, :status => "500 Error" }
       end
     end
